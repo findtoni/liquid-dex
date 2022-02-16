@@ -1,6 +1,7 @@
 import { tokens, EVM_REVERT } from '../helpers';
 
-const Token = artifacts.require("Token");
+const Token = artifacts.require('Token');
+
 require('chai')
   .use(require('chai-as-promised'))
   .should()
@@ -11,10 +12,10 @@ contract('Token', ([ deployer, receiver, exchange ]) => {
   const decimals = '18';
   const totalSupply = tokens(1000000).toString();
   let token = null;
+
   beforeEach(async() => {
     token = await Token.new();
   });
-
   describe('deployment', () => {
     it('tracks token name', async() => {
       const result = await token.name();
