@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './app.vue'
 import './assets/styles/tailwind.css'
-import web3 from './plugins/web3'
+import { createPinia } from 'pinia'
 
 createApp(App)
-  .use(web3)
+  .use(createPinia())
   .mount('#app')
