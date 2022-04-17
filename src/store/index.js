@@ -20,7 +20,7 @@ export const useStore = defineStore('liquid', {
   actions: {
     async fetchWeb3() {
       const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
-      this.accounts = await web3.eth.getAccounts();
+      this.accounts = await web3.eth.requestAccounts();
       this.networkId = await web3.eth.net.getId()
       this.web3 = web3;
       return web3;
