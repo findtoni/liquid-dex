@@ -7,7 +7,7 @@ require('chai')
   .use(require('chai-as-promised'))
   .should()
 
-contract('Exchange', ([ deployer, feeAccount, user0, user1, user2 ]) => {
+contract('Exchange', ([ deployer, feeAccount, user1, user2 ]) => {
   let token = null;
   let exchange = null;
   const feePercent = 10;
