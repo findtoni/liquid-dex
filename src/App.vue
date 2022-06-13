@@ -16,5 +16,6 @@ async function fetchStore() {
   await store.fetchToken(web3);
   await store.fetchExchange(web3);
   await store.fetchOrders();
+  await store.subscribeToEvents();
 }
 </script>

@@ -15,9 +15,9 @@ export const useStore = defineStore('liquid', {
       exchange: {
         contract: null,
         orders: {
-          all: {},
-          filled: {},
-          cancelled: {},
+          all: [],
+          filled: [],
+          cancelled: [],
         }
       },
       accounts: [],
@@ -80,6 +80,11 @@ export const useStore = defineStore('liquid', {
           lastPriceChange: lastPrice >= secondLastPrice ? '+' : '-',
         }]
       }
+    },
+    isLoading(type, loading) {
+      return {
+        [type]: loading,
+      };
     }
   },
   actions: {
@@ -109,6 +114,21 @@ export const useStore = defineStore('liquid', {
       this.exchange.orders.cancelled = cancelStream.map(event => event.returnValues);
       this.exchange.orders.filled = tradeStream.map(event => event.returnValues);
       this.exchange.orders.all = orderStream.map(event => event.returnValues);
+    },
+    async cancelOrder(order) {
+      const exchange = this.exchange.contract;
+      exchange.methods.cancelOrder(order.id).send({ from: this.account })
+        .on('transactionHash', (hash) => {
+          this.loading('cancel', true);
+        })
+        .on('error', () => {})
+    },
+    async subscribeToEvents() {
+      const exchange = this.exchange.contract;
+      exchange.events.Cancel({}, (error, event) => {
+        this.loading('cancel', false);
+        this.exchange.orders.cancelled.push(event.returnValues);
+      })
     }
   }
 })
