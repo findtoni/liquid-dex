@@ -120,8 +120,7 @@ export const useStore = defineStore('liquid', {
       exchange.methods.cancelOrder(order.id).send({ from: this.account })
         .on('transactionHash', (hash) => {
           this.loading('cancel', true);
-        })
-        .on('error', () => {})
+        }).on('error', error => console.log(error));
     },
     async subscribeToEvents() {
       const exchange = this.exchange.contract;
@@ -129,6 +128,18 @@ export const useStore = defineStore('liquid', {
         this.loading('cancel', false);
         this.exchange.orders.cancelled.push(event.returnValues);
       })
+      exchange.events.Trade({}, (error, event) => {
+        this.loading('fill', false);
+        const index = this.exchange.orders.filled.findIndex(order => order.id === event.returnValues.id);
+        index === -1 ? this.exchange.orders.filled.push(event.returnValues) : '';
+      })
+    },
+    async fillOrder(order) {
+      const exchange = this.exchange.contract;
+      exchange.methods.fillOrder(order.id).send({ from: this.account })
+        .on('transactionHash', (hash) => {
+          this.loading('fill', true);
+        }).on('error', error => console.log(error));
     }
   }
 })

@@ -60,6 +60,7 @@ export function formatUserOrder(account, orders) {
       ...order,
       orderType,
       orderTypeClass: orderType === 'buy' ? 'text-green' : 'text-red',
+      orderFillAction: orderType === 'buy' ? 'sell' : 'buy',
     }
   });
 }
