@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ETHER_ADDRESS, formatOrder, formatUserOrder, buildGraphData } from '../helpers';
+import { ETHER_ADDRESS, formatOrder, formatUserOrder, buildGraphData, formatBalance } from '../helpers';
 import Web3 from 'web3';
 import Token from '../abis/Token.json';
 import Exchange from '../abis/Exchange.json';
@@ -23,6 +23,11 @@ export const useStore = defineStore('liquid', {
       accounts: [],
       networkId: null,
       totalSupply: null,
+      loading: {
+        cancel: false,
+        fill: false,
+        balance: false,
+      }
     }
   },
   getters: {
@@ -81,11 +86,16 @@ export const useStore = defineStore('liquid', {
         }]
       }
     },
-    isLoading(type, loading) {
+    balances(state) {
       return {
-        [type]: loading,
-      };
-    }
+        ether: formatBalance(state.web3?.balance) || 0,
+        token: formatBalance(state.token?.balance) || 0,
+        exchange: {
+          ether: formatBalance(state.exchange?.balance?.ether) || 0,
+          token: formatBalance(state.exchange?.balance?.token) || 0,
+        }
+      }
+    },
   },
   actions: {
     async fetchWeb3() {
@@ -119,17 +129,17 @@ export const useStore = defineStore('liquid', {
       const exchange = this.exchange.contract;
       exchange.methods.cancelOrder(order.id).send({ from: this.account })
         .on('transactionHash', (hash) => {
-          this.loading('cancel', true);
+          this.loading.cancel = true;
         }).on('error', error => console.log(error));
     },
     async subscribeToEvents() {
       const exchange = this.exchange.contract;
       exchange.events.Cancel({}, (error, event) => {
-        this.loading('cancel', false);
+        this.loading.cancel = false;
         this.exchange.orders.cancelled.push(event.returnValues);
       })
       exchange.events.Trade({}, (error, event) => {
-        this.loading('fill', false);
+        this.loading.fill = false;
         const index = this.exchange.orders.filled.findIndex(order => order.id === event.returnValues.id);
         index === -1 ? this.exchange.orders.filled.push(event.returnValues) : '';
       })
@@ -138,8 +148,22 @@ export const useStore = defineStore('liquid', {
       const exchange = this.exchange.contract;
       exchange.methods.fillOrder(order.id).send({ from: this.account })
         .on('transactionHash', (hash) => {
-          this.loading('fill', true);
+          this.loading.fill = true;
         }).on('error', error => console.log(error));
+    },
+    async loadBalances() {
+      this.loading.balance = true;
+      const etherBalance = await this.web3.eth.getBalance(this.account);
+      const tokenBalance = await this.token.contract.methods.balanceOf(this.account).call();
+      const exchangeEtherBalance = await this.exchange.contract.methods.balanceOf(ETHER_ADDRESS, this.account).call();
+      const exchangeTokenBalance = await this.exchange.contract.methods.balanceOf(this.token.contract.options.address, this.account).call();
+      this.web3['balance'] = etherBalance;
+      this.token['balance'] = tokenBalance;
+      this.exchange['balance'] = {
+        ether: exchangeEtherBalance,
+        token: exchangeTokenBalance,
+      };
+      this.loading.balance = false;
     }
   }
 })

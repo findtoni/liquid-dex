@@ -17,5 +17,6 @@ async function fetchStore() {
   await store.fetchExchange(web3);
   await store.fetchOrders();
   await store.subscribeToEvents();
+  await store.loadBalances();
 }
 </script>
