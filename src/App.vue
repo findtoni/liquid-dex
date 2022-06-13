@@ -15,6 +15,6 @@ async function fetchStore() {
   const web3 = await store.fetchWeb3();
   await store.fetchToken(web3);
   await store.fetchExchange(web3);
-  await store.fetchOrders(store.exchange.contract)
+  await store.fetchOrders();
 }
 </script>
