@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'lodash';
 
 export const ETHER_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const DECIMALS = (10**18);
@@ -60,5 +61,21 @@ export function formatUserOrder(account, orders) {
       orderType,
       orderTypeClass: orderType === 'buy' ? 'text-green' : 'text-red',
     }
-  })
+  });
+}
+
+export function buildGraphData(orders) {
+  orders = _.groupBy(orders, o => moment.unix(o.timestamp).startOf('hour').format());
+  const hours = Object.keys(orders);
+  return hours.map(hour => {
+    const group = orders[hour];
+    const open = group[0];
+    const high = _.maxBy(group, 'tokenPrice');
+    const low = _.minBy(group, 'tokenPrice');
+    const close = group[group.length - 1];
+    return {
+      x: new Date(hour),
+      y: [open.tokenPrice, high.tokenPrice, low.tokenPrice, close.tokenPrice],
+    }
+  });
 }

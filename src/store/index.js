@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ETHER_ADDRESS, formatOrder, formatUserOrder } from '../helpers';
+import { ETHER_ADDRESS, formatOrder, formatUserOrder, buildGraphData } from '../helpers';
 import Web3 from 'web3';
 import Token from '../abis/Token.json';
 import Exchange from '../abis/Exchange.json';
@@ -66,6 +66,21 @@ export const useStore = defineStore('liquid', {
         cancelled: formatUserOrder(this.account, this.orders.cancelled),
       }
     },
+    priceChart() {
+      const orders = this.orders.filled;
+      let secondLastOrder = null;
+      let lastOrder = null;
+      [secondLastOrder, lastOrder] = orders.slice(orders.length -2, orders.length);
+      const secondLastPrice = secondLastOrder.tokenPrice || 0;
+      const lastPrice = lastOrder.tokenPrice || 0;
+      return {
+        series: [{
+          data: buildGraphData(orders),
+          lastPrice,
+          lastPriceChange: lastPrice >= secondLastPrice ? '+' : '-',
+        }]
+      }
+    }
   },
   actions: {
     async fetchWeb3() {
