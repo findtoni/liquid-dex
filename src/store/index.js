@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import { formatOrder, formatOrderStyle } from '../helpers';
+import { ETHER_ADDRESS, formatOrder, formatUserOrder } from '../helpers';
 import Web3 from 'web3';
 import Token from '../abis/Token.json';
 import Exchange from '../abis/Exchange.json';
+import _ from 'lodash';
 
 export const useStore = defineStore('liquid', {
   state: () => {
@@ -26,46 +27,49 @@ export const useStore = defineStore('liquid', {
   },
   getters: {
     account: (state) => state.accounts[0],
-    allOrders(state) {
-      let orders = state.exchange.orders.all.sort((a, b) => b.timestamp - a.timestamp);
-      let previousOrder = orders[0];
-      return orders.map(order => {
-        order = formatOrder(order);
-        order = formatOrderStyle(order, previousOrder);
-        previousOrder = order;
-        return order;
+    orders(state) {
+      const orders = {
+        all: formatOrder(state.exchange.orders.all.sort((a, b) => b.timestamp - a.timestamp)),
+        filled: formatOrder(state.exchange.orders.filled.sort((a, b) => b.timestamp - a.timestamp)),
+        cancelled: formatOrder(state.exchange.orders.cancelled.sort((a, b) => b.timestamp - a.timestamp)),
+      }
+      return {
+        all: orders.all,
+        filled: orders.filled,
+        cancelled: orders.cancelled,
+        open: _.reject(orders.all, order => {
+          const orderFilled = orders.filled.some(o => o.id === order.id);
+          const orderCancelled = orders.cancelled.some(o => o.id === order.id);
+          return orderFilled || orderCancelled;
+        }),
+      }
+    },
+    orderBook() {
+      const formattedOrders = this.orders.open.map(order => {
+        const orderType = order.tokenGive === ETHER_ADDRESS ? 'buy' : 'sell';
+        return {
+          ...order,
+          orderType,
+          orderTypeClass: orderType === 'buy' ? 'text-green' : 'text-red',
+        };
+      });
+      const orders = _.groupBy(formattedOrders, 'orderType');
+      return ({
+        buy: orders.buy.sort((a, b) => b.tokenPrice - a.tokenPrice),
+        sell: orders.sell.sort((a, b) => a.tokenPrice - b.tokenPrice),
       });
     },
-    filledOrders(state) {
-      let orders = state.exchange.orders.filled.sort((a, b) => b.timestamp - a.timestamp);
-      let previousOrder = orders[0];
-      return orders.map(order => {
-        order = formatOrder(order);
-        order = formatOrderStyle(order, previousOrder);
-        previousOrder = order;
-        return order;
-      });
+    userOrders() {
+      return {
+        filled: formatUserOrder(this.account, this.orders.filled),
+        open: formatUserOrder(this.account, this.orders.open),
+        cancelled: formatUserOrder(this.account, this.orders.cancelled),
+      }
     },
-    cancelledOrders(state) {
-      let orders = state.exchange.orders.cancelled.sort((a, b) => b.timestamp - a.timestamp);
-      let previousOrder = orders[0];
-      return orders.map(order => {
-        order = formatOrder(order);
-        order = formatOrderStyle(order, previousOrder);
-        previousOrder = order;
-        return order;
-      });
-    },
-    openOrders(state) {
-      return
-    },
-    orderBook(state) {
-
-    }
   },
   actions: {
     async fetchWeb3() {
-      const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
+      const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
       this.accounts = await web3.eth.requestAccounts();
       this.networkId = await web3.eth.net.getId()
       this.web3 = web3;
@@ -82,7 +86,8 @@ export const useStore = defineStore('liquid', {
       this.exchange.contract = res;
       return res;
     },
-    async fetchOrders(exchange) {
+    async fetchOrders() {
+      const exchange = this.exchange.contract;
       const cancelStream = await exchange.getPastEvents('Cancel', { fromBlock: 0, toBlock: 'latest' });
       const tradeStream = await exchange.getPastEvents('Trade', { fromBlock: 0, toBlock: 'latest' });
       const orderStream = await exchange.getPastEvents('Order', { fromBlock: 0, toBlock: 'latest' });

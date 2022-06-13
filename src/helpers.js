@@ -10,7 +10,7 @@ export const tokenPrice = (precision, etherAmount, tokenAmount) => {
   let tokenPrice = (etherAmount / tokenAmount);
   return Math.round(tokenPrice * precision) / precision;
 }
-export const formatOrder = (order) => {
+export const addOrderFormat = (order) => {
   let etherAmount = null;
   let tokenAmount = null;
   if (order.tokenGive == ETHER_ADDRESS) {
@@ -30,9 +30,35 @@ export const formatOrder = (order) => {
   }
 }
 
-export function formatOrderStyle(order, previousOrder) {
+export function addTokenPriceClass(order, previousOrder) {
   return {
     ...order,
     tokenPriceClass: (previousOrder.orderId == order.id) ? 'text-green' : (previousOrder.tokenPrice <= order.tokenPrice) ? 'text-green' : 'text-red'
   }
+}
+
+export function formatOrder(orders) {
+  let previousOrder = orders[0];
+  return orders.map(order => {
+    order = addOrderFormat(order);
+    order = addTokenPriceClass(order, previousOrder);
+    previousOrder = order;
+    return order;
+  });
+}
+
+export function formatUserOrder(account, orders) {
+  let userOrders = orders.filter(order => order.user === account);
+  userOrders = formatOrder(userOrders);
+  return userOrders.map(order => {
+    let orderType = null;
+    order.user === account
+      ? orderType = order.tokenGive === ETHER_ADDRESS ? 'buy' : 'sell'
+      : orderType = order.tokenGive === ETHER_ADDRESS ? 'sell' : 'buy';
+    return {
+      ...order,
+      orderType,
+      orderTypeClass: orderType === 'buy' ? 'text-green' : 'text-red',
+    }
+  })
 }
