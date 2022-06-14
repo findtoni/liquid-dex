@@ -96,6 +96,12 @@ export const useStore = defineStore('liquid', {
         }
       }
     },
+    orderActions(state) {
+      return {
+        buy: state.exchange?.buyOrder,
+        sell: state.exchange?.sellOrder,
+      }
+    }
   },
   actions: {
     async fetchWeb3() {
@@ -137,19 +143,23 @@ export const useStore = defineStore('liquid', {
       exchange.events.Cancel({}, (error, event) => {
         this.loading.cancel = false;
         this.exchange.orders.cancelled.push(event.returnValues);
-      })
+      });
       exchange.events.Trade({}, (error, event) => {
         this.loading.fill = false;
         const index = this.exchange.orders.filled.findIndex(order => order.id === event.returnValues.id);
         index === -1 ? this.exchange.orders.filled.push(event.returnValues) : '';
-      })
+      });
+      exchange.events.Order({}, (error, event) => {
+        this.loading.order = false;
+        const index = this.exchange.orders.open.findIndex(order => order.id === event.returnValues.id);
+        index === -1 ? this.exchange.orders.open.push(event.returnValues) : '';
+      });
     },
     async fillOrder(order) {
       const exchange = this.exchange.contract;
       exchange.methods.fillOrder(order.id).send({ from: this.account })
-        .on('transactionHash', (hash) => {
-          this.loading.fill = true;
-        }).on('error', error => console.log(error));
+        .on('transactionHash', () => this.loading.fill = true)
+        .on('error', error => console.log(error));
     },
     async loadBalances() {
       this.loading.balance = true;
@@ -157,13 +167,47 @@ export const useStore = defineStore('liquid', {
       const tokenBalance = await this.token.contract.methods.balanceOf(this.account).call();
       const exchangeEtherBalance = await this.exchange.contract.methods.balanceOf(ETHER_ADDRESS, this.account).call();
       const exchangeTokenBalance = await this.exchange.contract.methods.balanceOf(this.token.contract.options.address, this.account).call();
-      this.web3['balance'] = etherBalance;
-      this.token['balance'] = tokenBalance;
-      this.exchange['balance'] = {
+      this.web3.balance = etherBalance;
+      this.token.balance = tokenBalance;
+      this.exchange.balance = {
         ether: exchangeEtherBalance,
         token: exchangeTokenBalance,
       };
       this.loading.balance = false;
-    }
+    },
+    async buyOrder(type, amount, price) {
+      if (type == 'amountChanged') {
+        this.exchange.buyOrder = { ...this.exchange.buyOrder, amount: amount };
+      } else if (type == 'priceChanged') {
+        this.exchange.buyOrder = { ...this.exchange.buyOrder, price: price };
+      }
+      const order = this.exchange.buyOrder;
+      const tokenGet = this.token.contract.option.address;
+      const amountGet = this.web3.utils.toWei(order.amount, 'ether');
+      const tokenGive = ETHER_ADDRESS;
+      const amountGive = this.web3.utils.toWei((order.amount * order.price).toString(), 'ether');
+      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive).send({ from: this.account })
+        .on('transactionHash', () => this.loading.order = true)
+        .on('error', error => console.log(error));
+    },
+    async sellOrder(type) {
+      if (type == 'amountChanged') {
+        this.exchange.sellOrder = { ...this.exchange.sellOrder, amount: amount };
+      } else if (type == 'priceChanged') {
+        this.exchange.sellOrder = { ...this.exchange.sellOrder, price: price };
+      }
+      const order = this.exchange.sellOrder;
+      const tokenGet = ETHER_ADDRESS;
+      const amountGet = this.web3.utils.toWei((order.amount * order.price).toString(), 'ether');
+      const tokenGive = this.token.contract.option.address;
+      const amountGive = this.web3.utils.toWei(order.amount, 'ether');
+      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive).send({ from: this.account })
+        .on('transactionHash', () => this.loading.order = true)
+        .on('error', error => console.log(error));
+    },
+    async orderMade(order) {
+      const index = this.exchange.orders.all.findIndex(o => o.id === order.id);
+      index === -1 ? this.exchange.orders.all.push(order) : '';
+    },
   }
 })
