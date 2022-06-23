@@ -27,7 +27,7 @@ export const addOrderFormat = (order) => {
     etherAmount: ether(etherAmount),
     tokenAmount: tokens(tokenAmount),
     tokenPrice: tokenPrice(100000, etherAmount, tokenAmount),
-    formattedTimestamp: moment.unix(order.timestamp).format('h:mm:ss a M/D')
+    formattedTimestamp: moment.unix(order.timestamp).format('D/M - h:mma')
   }
 }
 

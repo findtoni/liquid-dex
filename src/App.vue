@@ -18,5 +18,6 @@ async function fetchStore() {
   await store.fetchOrders();
   await store.subscribeToEvents();
   await store.loadBalances();
+  store.setStatus('exchange', true);
 }
 </script>
