@@ -10,7 +10,10 @@ export const useStore = defineStore('liquid', {
     return {
       web3: {},
       token: {
+        name: null,
+        symbol: null,
         contract: null,
+        totalSupply: null,
       },
       exchange: {
         contract: null,
@@ -21,12 +24,15 @@ export const useStore = defineStore('liquid', {
         }
       },
       accounts: [],
-      networkId: null,
-      totalSupply: null,
-      loading: {
+      network: {
+        id: null,
+      },
+      status: {
         cancel: false,
         fill: false,
         balance: false,
+        order: false,
+        exchange: false,
       }
     }
   },
@@ -60,8 +66,8 @@ export const useStore = defineStore('liquid', {
       });
       const orders = _.groupBy(formattedOrders, 'orderType');
       return ({
-        buy: orders.buy.sort((a, b) => b.tokenPrice - a.tokenPrice),
-        sell: orders.sell.sort((a, b) => a.tokenPrice - b.tokenPrice),
+        buy: orders?.buy?.sort((a, b) => b.tokenPrice - a.tokenPrice),
+        sell: orders?.sell?.sort((a, b) => a.tokenPrice - b.tokenPrice),
       });
     },
     userOrders() {
@@ -101,24 +107,26 @@ export const useStore = defineStore('liquid', {
         buy: state.exchange?.buyOrder,
         sell: state.exchange?.sellOrder,
       }
-    }
+    },
   },
   actions: {
     async fetchWeb3() {
       const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
       this.accounts = await web3.eth.requestAccounts();
-      this.networkId = await web3.eth.net.getId()
+      this.network.id = await web3.eth.net.getId()
       this.web3 = web3;
       return web3;
     },
     async fetchToken(web3) {
-      const token = new web3.eth.Contract(Token.abi, Token.networks[this.networkId].address);
-      this.totalSupply = await token.methods.totalSupply().call(),
+      const token = new web3.eth.Contract(Token.abi, Token.networks[this.network.id].address);
+      this.token.totalSupply = await token.methods.totalSupply().call(),
+      this.token.name = await token.methods.name().call();
+      this.token.symbol = await token.methods.symbol().call();
       this.token.contract = token;
       return token;
     },
     async fetchExchange(web3) {
-      const res = new web3.eth.Contract(Exchange.abi, Exchange.networks[this.networkId].address);
+      const res = new web3.eth.Contract(Exchange.abi, Exchange.networks[this.network.id].address);
       this.exchange.contract = res;
       return res;
     },
@@ -135,34 +143,37 @@ export const useStore = defineStore('liquid', {
       const exchange = this.exchange.contract;
       exchange.methods.cancelOrder(order.id).send({ from: this.account })
         .on('transactionHash', (hash) => {
-          this.loading.cancel = true;
+          this.status.cancel = true;
         }).on('error', error => console.log(error));
     },
     async subscribeToEvents() {
       const exchange = this.exchange.contract;
       exchange.events.Cancel({}, (error, event) => {
-        this.loading.cancel = false;
+        this.status.cancel = false;
         this.exchange.orders.cancelled.push(event.returnValues);
       });
       exchange.events.Trade({}, (error, event) => {
-        this.loading.fill = false;
-        const index = this.exchange.orders.filled.findIndex(order => order.id === event.returnValues.id);
+        this.status.fill = false;
+        const index = this.exchange.orders?.filled?.findIndex(order => order.id === event.returnValues.id);
         index === -1 ? this.exchange.orders.filled.push(event.returnValues) : '';
       });
       exchange.events.Order({}, (error, event) => {
-        this.loading.order = false;
-        const index = this.exchange.orders.open.findIndex(order => order.id === event.returnValues.id);
+        this.status.order = false;
+        const index = this.exchange.orders?.open?.findIndex(order => order.id === event.returnValues.id);
         index === -1 ? this.exchange.orders.open.push(event.returnValues) : '';
       });
     },
     async fillOrder(order) {
       const exchange = this.exchange.contract;
       exchange.methods.fillOrder(order.id).send({ from: this.account })
-        .on('transactionHash', () => this.loading.fill = true)
+        .on('transactionHash', () => this.status.fill = true)
         .on('error', error => console.log(error));
+      this.exchange.orders
+      await this.orderMade(order);
+      return true;
     },
     async loadBalances() {
-      this.loading.balance = true;
+      this.status.balance = true;
       const etherBalance = await this.web3.eth.getBalance(this.account);
       const tokenBalance = await this.token.contract.methods.balanceOf(this.account).call();
       const exchangeEtherBalance = await this.exchange.contract.methods.balanceOf(ETHER_ADDRESS, this.account).call();
@@ -173,41 +184,45 @@ export const useStore = defineStore('liquid', {
         ether: exchangeEtherBalance,
         token: exchangeTokenBalance,
       };
-      this.loading.balance = false;
+      this.status.balance = false;
     },
-    async buyOrder(type, amount, price) {
-      if (type == 'amountChanged') {
-        this.exchange.buyOrder = { ...this.exchange.buyOrder, amount: amount };
-      } else if (type == 'priceChanged') {
-        this.exchange.buyOrder = { ...this.exchange.buyOrder, price: price };
-      }
+    async buyOrder(amount, price) {
+      this.exchange.buyOrder = { ...this.exchange.buyOrder, amount: amount, price: price };
       const order = this.exchange.buyOrder;
-      const tokenGet = this.token.contract.option.address;
+      const tokenGet = this.token.contract.options.address;
       const amountGet = this.web3.utils.toWei(order.amount, 'ether');
       const tokenGive = ETHER_ADDRESS;
       const amountGive = this.web3.utils.toWei((order.amount * order.price).toString(), 'ether');
-      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive).send({ from: this.account })
-        .on('transactionHash', () => this.loading.order = true)
+      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+        .send({ from: this.account })
+        .on('transactionHash', () => this.status.order = true)
         .on('error', error => console.log(error));
+      return order;
     },
-    async sellOrder(type) {
-      if (type == 'amountChanged') {
-        this.exchange.sellOrder = { ...this.exchange.sellOrder, amount: amount };
-      } else if (type == 'priceChanged') {
-        this.exchange.sellOrder = { ...this.exchange.sellOrder, price: price };
-      }
+    async sellOrder(amount, price) {
+      this.exchange.sellOrder = { ...this.exchange.sellOrder, amount: amount, price: price };
       const order = this.exchange.sellOrder;
       const tokenGet = ETHER_ADDRESS;
       const amountGet = this.web3.utils.toWei((order.amount * order.price).toString(), 'ether');
-      const tokenGive = this.token.contract.option.address;
+      const tokenGive = this.token.contract.options.address;
       const amountGive = this.web3.utils.toWei(order.amount, 'ether');
-      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive).send({ from: this.account })
-        .on('transactionHash', () => this.loading.order = true)
+      this.exchange.contract.methods.makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+        .send({ from: this.account })
+        .on('transactionHash', () => this.status.order = true)
         .on('error', error => console.log(error));
+      return order;
     },
     async orderMade(order) {
-      const index = this.exchange.orders.all.findIndex(o => o.id === order.id);
-      index === -1 ? this.exchange.orders.all.push(order) : '';
+      const index = this.exchange.orders?.all?.findIndex(o => o.id === order.id);
+      if (index === -1) {
+        this.exchange.orders.all.push(order);
+      }
     },
+    async removeAccount() {
+      await this.web3.eth.accounts.wallet.clear();
+    },
+    setStatus(name, status) {
+      this.status[name] = status;
+    }
   }
 })
