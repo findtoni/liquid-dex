@@ -84,3 +84,5 @@ export function buildGraphData(orders) {
 export function formatBalance(balance) {
   return Math.round(ether(balance) * 100) / 100;
 }
+
+export const bucket = import.meta.env.BUCKET;
