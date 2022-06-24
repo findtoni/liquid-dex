@@ -1,6 +1,6 @@
 # liquid-dex
 
-#### Decentralized Exchange (DEX)
+### Decentralized Exchange (DEX)
 ---
 
 ##### Stack
