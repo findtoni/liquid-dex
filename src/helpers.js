@@ -85,4 +85,4 @@ export function formatBalance(balance) {
   return Math.round(ether(balance) * 100) / 100;
 }
 
-export const bucket = import.meta.env.BUCKET;
+export const bucket = import.meta.env.VITE_BUCKET;
