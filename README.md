@@ -16,6 +16,7 @@
 - User Trade History
 - Auto-fill/Cancel Order
 - Price Chart
+- Smart Contract Unit Tests
 ---
 ##### Instructions
 1. Run `yarn install` to install dependencies
