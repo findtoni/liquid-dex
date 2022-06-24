@@ -1,7 +1,10 @@
 require('babel-register');
 require('babel-polyfill');
 require('dotenv').config();
-
+const HDWalletProvider = require('truffle-hdwallet-provider-privkey');
+const privateKeys = process.env.PRIVATE_KEYS;
+const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+const infuraApiKey = process.env.INFURA_API_KEY;
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -50,6 +53,28 @@ module.exports = {
      port: 8545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },
+    goerli: {
+      provider: function () {
+        return new HDWalletProvider(
+          privateKeys.split(','),
+          `https://eth-goerli.alchemyapi.io/v2/${alchemyApiKey}`
+        )
+      },
+      gas: 5000000,
+      gasPrice: 25000000000,
+      network_id: 5,
+    },
+    kovan: {
+      provider: function () {
+        return new HDWalletProvider(
+          privateKeys.split(','),
+          `https://kovan.infura.io/v3/${infuraApiKey}`
+        )
+      },
+      gas: 5000000,
+      gasPrice: 25000000000,
+      network_id: 42,
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

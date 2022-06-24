@@ -219,7 +219,10 @@ export const useStore = defineStore('liquid', {
       }
     },
     async removeAccount() {
-      await this.web3.eth.accounts.wallet.clear();
+      return await this.web3.eth.accounts.wallet.clear();
+    },
+    async getAccount() {
+      this.accounts = await this.web3.eth?.requestAccounts();
     },
     setStatus(name, status) {
       this.status[name] = status;
