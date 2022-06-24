@@ -17,6 +17,7 @@
 - Auto-fill/Cancel Order
 - Price Chart
 - Smart Contract Unit Tests
+- Smart Contract on Ropsten
 ---
 ##### Instructions
 1. Run `yarn install` to install dependencies
