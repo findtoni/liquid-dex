@@ -1,5 +1,5 @@
 # liquid-dex
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/aff6642a-05c9-48ef-933d-0483875531ec/deploy-status)](https://app.netlify.com/sites/liquid-dex/deploys)
 ### Decentralized Exchange (DEX)
 ---
 
