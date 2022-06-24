@@ -6,6 +6,7 @@
 ##### Stack
 - Vue 3, Vite
 - Pinia
+- Solidity
 - Truffle
 - Chai
 
