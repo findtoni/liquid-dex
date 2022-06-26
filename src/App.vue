@@ -12,12 +12,14 @@ const store = useStore();
 
 fetchStore();
 async function fetchStore() {
-  const web3 = await store.fetchWeb3();
-  await store.fetchToken(web3);
-  await store.fetchExchange(web3);
-  await store.fetchOrders();
-  await store.subscribeToEvents();
-  await store.loadBalances();
-  store.setStatus('exchange', true);
+  try {
+    const web3 = await store.fetchWeb3();
+    await store.fetchToken(web3);
+    await store.fetchExchange(web3);
+    await store.fetchOrders();
+    await store.subscribeToEvents();
+    await store.loadBalances();
+    store.setStatus('exchange', true);
+  } catch(e) { console.log(e) }
 }
 </script>
