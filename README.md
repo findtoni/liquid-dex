@@ -4,11 +4,12 @@
 ---
 
 ##### Stack
-- Vue 3, Vite
-- Pinia
 - Solidity
 - Truffle
+- Web3.js
 - Chai
+- Vue 3, Vite
+- Pinia
 
 ##### Features
 - Order Book
@@ -18,7 +19,10 @@
 - Auto-fill/Cancel Order
 - Price Chart
 - Smart Contract Unit Tests
-- Smart Contract on Ropsten
+
+##### Smart Contracts on Ropsten
+- [Exchange](https://ropsten.etherscan.io/address/0x2Ef12F691FB95c8122C86130324D0CB1722Ef7F1)
+- [Token](https://ropsten.etherscan.io/address/0x5774E7A581ae59f2CCEf8eda4be9792911164683)
 ---
 ##### Instructions
 1. Run `yarn install` to install dependencies
