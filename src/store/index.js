@@ -108,14 +108,19 @@ export const useStore = defineStore('liquid', {
         sell: state.exchange?.sellOrder,
       }
     },
+    hasWallet(state) {
+      return state.web3 ? true : false;
+    }
   },
   actions: {
     async fetchWeb3() {
-      const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-      this.accounts = await web3.eth.requestAccounts();
-      this.network.id = await web3.eth.net.getId()
-      this.web3 = web3;
-      return web3;
+      const { ethereum } = window;
+      if (ethereum) {
+        this.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        this.web3  = new Web3(ethereum);
+        this.network.id = await this.web3.eth.net.getId();
+      }
+      return this.web3;
     },
     async fetchToken(web3) {
       const token = new web3.eth.Contract(Token.abi, Token.networks[this.network.id].address);

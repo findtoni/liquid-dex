@@ -60,7 +60,7 @@ async function buyOrder(amount, price) {
   const order = await store.buyOrder(state.buyOrder.amount, state.buyOrder.price);
   const canFillOrder = confirmOrder('buy', order);
   if (canFillOrder.length >=1) {
-    message.loading('Filling order...', 0);
+    message.loading('Filling order...', 100);
     await store.fillOrder(canFillOrder[0]);
   }
   state.buyOrder.amount = null;
@@ -73,7 +73,7 @@ async function sellOrder(amount, price) {
   const order = await store.sellOrder(state.sellOrder.amount, state.sellOrder.price);
   const canFillOrder = confirmOrder('sell', order);
   if (canFillOrder.length >=1) {
-    message.loading('Filling order...', 0);
+    message.loading('Filling order...', 100);
     await store.fillOrder(canFillOrder[0]);
   }
   state.sellOrder.amount = null;

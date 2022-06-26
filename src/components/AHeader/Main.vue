@@ -5,7 +5,7 @@
       <div class="rounded px-4 py-2 bg-accent flex justify-end items-center space-x-3">
         <div v-if="store.account" :class="['truncate inline-flex w-36 md:w-52']">{{ store.account }}</div>
         <div v-else @click="store.getAccount" :class="['truncate inline-flex w-auto cursor-pointer']">{{ 'Connect Wallet' }}</div>
-        <LogoutIcon @click="store.removeAccount" class="hidden cursor-pointer hover:scale-125 h-4 w-4" />
+        <LogoutIcon v-if="store.account" @click="store.removeAccount" class="cursor-pointer hover:scale-125 h-4 w-4" />
       </div>
     </div>
   </div>
