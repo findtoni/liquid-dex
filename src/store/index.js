@@ -26,6 +26,7 @@ export const useStore = defineStore('liquid', {
       accounts: [],
       network: {
         id: null,
+        connected: false,
       },
       status: {
         cancel: false,
@@ -110,6 +111,9 @@ export const useStore = defineStore('liquid', {
     },
     hasWallet(state) {
       return state.web3 ? true : false;
+    },
+    ethereum() {
+      return window.ethereum;
     }
   },
   actions: {
@@ -226,8 +230,13 @@ export const useStore = defineStore('liquid', {
     async removeAccount() {
       return await this.web3.eth.accounts.wallet.clear();
     },
-    async getAccount() {
-      this.accounts = await this.web3.eth?.requestAccounts();
+    async getAccount(state) {
+      const accounts = await state.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length >=1) {
+        state.network.connected = true;
+        state.account = accounts[0];
+        return state.account;
+      } else return false;
     },
     setStatus(name, status) {
       this.status[name] = status;
