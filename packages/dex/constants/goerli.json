@@ -1,7 +1,11 @@
 {
   "name": "Goerli",
-  "timestamp": "",
-  "version": "",
+  "timestamp": "00:00",
+  "version": {
+    "major": 1.0,
+    "minor": 1.0,
+    "patch": 1.0
+  },
   "tokens": [
     {
       "name": "Wrapped Ether",
