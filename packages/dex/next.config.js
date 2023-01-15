@@ -54,6 +54,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'etherscan.io',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
