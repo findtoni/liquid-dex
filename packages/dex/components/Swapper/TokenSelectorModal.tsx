@@ -21,7 +21,7 @@ interface TokenSelectorProps {
   onClose: () => void;
 }
 
-export function TokenImage({ name, logoURI }: { name: string, logoURI: string | undefined }) {
+export function TokenImage({ name, logoURI = 'https://via.placeholder.com/50' }: { name: string, logoURI: string | undefined }) {
   return (
     <Image src={logoURI?.slice(0, 4) === 'ipfs' ? logoURI?.replace('ipfs://', 'https://ipfs.io/ipfs/') : logoURI as string}
     alt={name} width={25} height={25} className="rounded" />

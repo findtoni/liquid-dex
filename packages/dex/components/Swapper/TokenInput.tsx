@@ -2,17 +2,21 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Button, useDisclosure } from '@chakra-ui/react';
+import {
+  NumberInput,
+  NumberInputField,
+} from '@chakra-ui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import TokenSelectorModal from './TokenSelectorModal';
 import TokenSkeleton from './TokenSkeleton';
 import { TokenInfo } from '@uniswap/token-lists';
 import { TokenImage } from './TokenSelectorModal';
+import { useTradeStore } from '../../store/trade';
 
 type Token = {
-  token: TokenInfo | {};
-  amount: string;
-  price: string;
-  balance: string;
+  token: TokenInfo;
+  amount: number;
+  price?: string;
 };
 
 interface TokenInput {
@@ -20,6 +24,24 @@ interface TokenInput {
   token: Token,
   onMax?: () => void,
   loading?: boolean
+}
+
+function TokenAmountInput({ type }: { type: 'buy' | 'sell' }) {
+  const [value, setValue] = useState<number>(0);
+  const { setTradeAmount } = useTradeStore();
+  //todo: set max to token max in wallet
+  
+  const setAmount = (value: number) => {
+    setValue(value);
+    setTradeAmount(type, value);
+  };
+
+  return (
+    //@ts-ignore
+    <NumberInput step={0.1} precision={1} value={value} onChange={setAmount} min={0} max={30} maxW='90px' allowMouseWheel>
+      <NumberInputField />
+    </NumberInput>
+  );
 }
 
 export default function TokenInput({ type, token, onMax, loading }: TokenInput) {
@@ -32,7 +54,7 @@ export default function TokenInput({ type, token, onMax, loading }: TokenInput) 
         <div className="flex justify-between items-center text-gray-400">
           <p className="text-sm">You {type}</p>
           <div className="flex justify-between items-center space-x-1">
-            <p className="text-sm">Balance: {token?.balance}</p>
+            <p className="text-sm">Balance: 0</p>
             {type == 'sell' ? (
               <span
                 onClick={onMax}
@@ -49,14 +71,14 @@ export default function TokenInput({ type, token, onMax, loading }: TokenInput) 
             onClick={onOpen}
             className="flex justify-start items-center space-x-1 hover:cursor-pointer p-1 hover:rounded hover:bg-gray-600"
           >
-            <TokenImage name={token.token.name} logoURI={token.token.logoURI} />
-            <p className="text-xl font-medium">{token.token.symbol}</p>
+            <TokenImage name={token.token?.name} logoURI={token.token?.logoURI} />
+            <p className="text-xl font-medium">{token.token?.symbol}</p>
             <ChevronDownIcon className="text-white h-3 w-3" />
           </div>
           {loading ? (
             <TokenSkeleton width="24" />
           ) : (
-            <p className="text-xl font-medium">{token?.amount}</p>
+              <TokenAmountInput type={type} />
           )}
         </div>
         {/* Token Name / Token Price */}
