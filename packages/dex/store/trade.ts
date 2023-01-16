@@ -15,6 +15,7 @@ interface TradeState {
   tokenIn: Token;
   tokenOut: Token;
   setTradeToken: (type: 'buy' | 'sell', token: TokenInfo) => void;
+  setTradeAmount: (type: 'buy' | 'sell', amount: number) => void;
   setChain: (chain: SupportedChainId) => void;
 }
 
@@ -34,9 +35,16 @@ export const useTradeStore = create<TradeState>()(
       },
       setTradeToken: (type, tokenInfo) => {
         if (type === 'buy') {
-          set({ tokenIn: { token: tokenInfo } });
+          set({ tokenIn: { ...get().tokenIn, token: tokenInfo } });
         } else {
-          set({ tokenOut: { token: tokenInfo }});
+          set({ tokenOut: { ...get().tokenOut, token: tokenInfo }});
+        }
+      },
+      setTradeAmount: (type, amount) => {
+        if (type === 'buy') {
+          set({ tokenIn: { ...get().tokenIn, amount } });
+        } else {
+          set({ tokenOut: { ...get().tokenOut, amount }});
         }
       },
       setChain: (chain) => set({ chain }),
