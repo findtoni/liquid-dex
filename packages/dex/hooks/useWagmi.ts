@@ -11,7 +11,7 @@ const { provider } = configureChains(
   ]
 );
 
-export const client = createClient({
+export const WagmiClient = createClient({
   autoConnect: true,
   provider,
 });

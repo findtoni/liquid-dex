@@ -9,6 +9,7 @@
     "lint": "next lint --fix"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.4",
     "@chakra-ui/react": "^2.4.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -23,6 +24,7 @@
     "eslint-config-prettier": "^8.6.0",
     "ethers": "^5.7.2",
     "framer-motion": "^6.5.1",
+    "graphql": "^16.6.0",
     "lodash-es": "^4.17.21",
     "next": "13.1.1",
     "prettier": "^2.8.2",
