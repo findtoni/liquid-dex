@@ -12,7 +12,7 @@ import {
   ModalCloseButton
 } from '@chakra-ui/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { TokenInfo, TokenList } from '@uniswap/token-lists';
+import { TokenInfo } from '@uniswap/token-lists';
 import Image from 'next/image';
 
 interface TokenSelectorProps {
@@ -22,13 +22,9 @@ interface TokenSelectorProps {
 }
 
 export function TokenImage({ name, logoURI }: { name: string, logoURI: string | undefined }) {
-  let logo = '';
-  if (logoURI?.slice(0, 4) === 'ipfs') {
-    logo = logoURI?.replace('ipfs://', 'https://ipfs.io/ipfs/');
-  } else logo = logoURI as string;
-
   return (
-  <Image src={logo} alt={name} width={25} height={25} className="rounded" />
+    <Image src={logoURI?.slice(0, 4) === 'ipfs' ? logoURI?.replace('ipfs://', 'https://ipfs.io/ipfs/') : logoURI as string}
+    alt={name} width={25} height={25} className="rounded" />
   );
 }
 
@@ -40,7 +36,7 @@ function TokenItem({ token, onClick }: { token: TokenInfo, onClick: () => void }
         <p>{token?.name}</p>
         <p className="text-sm font-medium">{token?.symbol}</p>
       </div>
-    </div>    
+    </div>      
   );
 }
 
@@ -55,6 +51,11 @@ export default function TokenSelectorModal({ type, isOpen, onClose }: TokenSelec
   useEffect(() => {
     loadTokens();
   }, []);
+
+  function setToken(token: TokenInfo) {
+    setTradeToken(type, token);
+    onClose();
+  }
 
   return (
     <>
@@ -78,12 +79,12 @@ export default function TokenSelectorModal({ type, isOpen, onClose }: TokenSelec
                 />
               </InputGroup>
               <div
-                className="flex flex-col space-y-2 overflow-auto"
-                style={{ height: 'calc(100vh - 1rem - 81px - 50px)' }}>
+                className="flex flex-col space-y-2 overflow-auto h-auto pt-4"
+                style={{ maxHeight: 'calc(100vh - 1rem - 81px - 50px)' }}>
                 {tokenList?.map((token, index) => (
                   <TokenItem
                     token={token}
-                    onClick={() => setTradeToken(type, token)}
+                    onClick={() => setToken(token)}
                     key={index}
                   />
                 ))}
