@@ -5,9 +5,9 @@ import '../styles/globals.scss';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { WagmiConfig } from 'wagmi';
-import { WagmiClient } from '../hooks/useWagmi';
-import { ApolloClient } from '../hooks/useApollo';
+import { wagmiClient } from '../hooks/useWagmi';
 import { ApolloProvider } from '@apollo/client';
+import { apolloClient } from '../hooks/useApollo';
 
 export default function RootLayout({
   children,
@@ -23,8 +23,8 @@ export default function RootLayout({
         <link rel="icon" href="https://fav.farm/🔁" />
       </head>
       <body className="liquid">
-        <WagmiConfig client={WagmiClient}>
-          <ApolloProvider client={ApolloClient}>
+        <WagmiConfig client={wagmiClient}>
+          <ApolloProvider client={apolloClient}>
             <ChakraProvider>{children}</ChakraProvider>
           </ApolloProvider>
         </WagmiConfig>
