@@ -20,10 +20,11 @@ type Token = {
 };
 
 interface TokenInput {
-  type: 'buy' | 'sell',
-  token: Token,
-  onMax?: () => void,
-  loading?: boolean
+  type: 'buy' | 'sell';
+  token: Token;
+  onMax?: () => void;
+  onReverse?: () => void;
+  loading?: boolean;
 }
 
 function TokenAmountInput({ type }: { type: 'buy' | 'sell' }) {
@@ -44,7 +45,7 @@ function TokenAmountInput({ type }: { type: 'buy' | 'sell' }) {
   );
 }
 
-export default function TokenInput({ type, token, onMax, loading }: TokenInput) {
+export default function TokenInput({ type, token, onMax, onReverse, loading }: TokenInput) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -91,7 +92,7 @@ export default function TokenInput({ type, token, onMax, loading }: TokenInput) 
           )}
         </div>
       </div>
-      <TokenSelectorModal type={type} isOpen={isOpen} onClose={onClose} />
+      <TokenSelectorModal type={type} isOpen={isOpen} onClose={onClose} onReverse={onReverse} />
     </>
   );
 }

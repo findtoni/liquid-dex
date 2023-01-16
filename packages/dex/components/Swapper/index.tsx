@@ -62,9 +62,15 @@ export default function Swapper() {
         token={tokenOut}
         onMax={setTokenInMax}
         loading={isLoading}
+        onReverse={reverseToken}
       />
       <TokenReverse onReverse={reverseToken} />
-      <TokenInput type="buy" token={tokenIn} loading={isLoading} />
+      <TokenInput
+        type="buy"
+        token={tokenIn}
+        loading={isLoading}
+        onReverse={reverseToken}
+      />
       <TradeInfo />
 
       {/* Connect Wallet */}

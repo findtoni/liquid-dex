@@ -17,6 +17,7 @@ interface TradeState {
   setTradeToken: (type: 'buy' | 'sell', token: TokenInfo) => void;
   setTradeAmount: (type: 'buy' | 'sell', amount: number) => void;
   setChain: (chain: SupportedChainId) => void;
+  isDuplicate: (token: TokenInfo) => boolean;
 }
 
 export const useTradeStore = create<TradeState>()(
@@ -33,21 +34,27 @@ export const useTradeStore = create<TradeState>()(
         amount: 0,
         price: '$1.2',
       },
-      setTradeToken: (type, tokenInfo) => {
+      setTradeToken: (type, token) => {
+        const { tokenIn, tokenOut } = get();
         if (type === 'buy') {
-          set({ tokenIn: { ...get().tokenIn, token: tokenInfo } });
+          set({ tokenIn: { ...tokenIn, token: token } });
         } else {
-          set({ tokenOut: { ...get().tokenOut, token: tokenInfo }});
+          set({ tokenOut: { ...tokenOut, token: token }});
         }
       },
       setTradeAmount: (type, amount) => {
+        const { tokenIn, tokenOut } = get();
         if (type === 'buy') {
-          set({ tokenIn: { ...get().tokenIn, amount } });
+          set({ tokenIn: { ...tokenIn, amount } });
         } else {
-          set({ tokenOut: { ...get().tokenOut, amount }});
+          set({ tokenOut: { ...tokenOut, amount }});
         }
       },
       setChain: (chain) => set({ chain }),
+      isDuplicate: (token) => {
+        const { tokenIn, tokenOut } = get();
+        return tokenIn.token.address === token.address || tokenOut.token.address === token.address;
+      }
     }), { name: 'useTrade'}),
   )
 );

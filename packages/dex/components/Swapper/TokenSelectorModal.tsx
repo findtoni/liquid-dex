@@ -19,6 +19,7 @@ interface TokenSelectorProps {
   type: 'buy' | 'sell';
   isOpen: boolean;
   onClose: () => void;
+  onReverse: () => void;
 }
 
 export function TokenImage({ name, logoURI = 'https://via.placeholder.com/50' }: { name: string, logoURI: string | undefined }) {
@@ -40,8 +41,8 @@ function TokenItem({ token, onClick }: { token: TokenInfo, onClick: () => void }
   );
 }
 
-export default function TokenSelectorModal({ type, isOpen, onClose }: TokenSelectorProps) {
-  const { chain: activeChain, setTradeToken } = useTradeStore();
+export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }: TokenSelectorProps) {
+  const { chain: activeChain, setTradeToken, isDuplicate } = useTradeStore();
   const { tokenLists, loadTokens } = useTokensStore();
   const tokenList = useMemo<TokenInfo[]>(
     () => tokenLists[activeChain]?.tokens,
@@ -53,7 +54,9 @@ export default function TokenSelectorModal({ type, isOpen, onClose }: TokenSelec
   }, []);
 
   function setToken(token: TokenInfo) {
-    setTradeToken(type, token);
+    if (isDuplicate(token)) {
+      onReverse();
+    } else setTradeToken(type, token);
     onClose();
   }
 
