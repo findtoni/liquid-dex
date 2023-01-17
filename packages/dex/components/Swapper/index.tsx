@@ -79,7 +79,7 @@ export default function Swapper() {
           Button
         </Button>
       ) : (
-        <ConnectWalletButton size="md" />
+        <ConnectWalletButton />
       )}
     </Card>
   );

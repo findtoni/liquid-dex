@@ -42,7 +42,7 @@ export interface L1ChainInfo extends BaseChainInfo {
   readonly networkType: NetworkType.L1;
 }
 
-interface L2ChainInfo extends BaseChainInfo {
+export interface L2ChainInfo extends BaseChainInfo {
   readonly networkType: NetworkType.L2;
   readonly bridge: string;
   readonly statusPage?: string;
@@ -89,25 +89,25 @@ export const CHAIN_INFO: ChainInfoMap = {
       'https://help.uniswap.org/en/collections/3137778-uniswap-on-optimistic-ethereum-oξ',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   },
-  [SupportedChainId.OPTIMISTIC_KOVAN]: {
-    networkType: NetworkType.L2,
-    chainId: SupportedChainId.OPTIMISTIC_KOVAN,
-    bridge: 'https://app.optimism.io/bridge',
-    defaultListUrl: OPTIMISM_LIST,
-    docs: 'https://optimism.io/',
-    explorer: 'https://optimistic.etherscan.io/',
-    infoLink: 'https://info.uniswap.org/#/optimism/',
-    label: 'Optimistic Kovan',
-    logoUrl: optimismLogoUrl,
-    statusPage: 'https://optimism.io/status',
-    helpCenterUrl:
-      'https://help.uniswap.org/en/collections/3137778-uniswap-on-optimistic-ethereum-oξ',
-    nativeCurrency: {
-      name: 'Optimistic Kovan Ether',
-      symbol: 'kovOpETH',
-      decimals: 18,
-    },
-  },
+  // [SupportedChainId.OPTIMISTIC_KOVAN]: {
+  //   networkType: NetworkType.L2,
+  //   chainId: SupportedChainId.OPTIMISTIC_KOVAN,
+  //   bridge: 'https://app.optimism.io/bridge',
+  //   defaultListUrl: OPTIMISM_LIST,
+  //   docs: 'https://optimism.io/',
+  //   explorer: 'https://optimistic.etherscan.io/',
+  //   infoLink: 'https://info.uniswap.org/#/optimism/',
+  //   label: 'Optimistic Kovan',
+  //   logoUrl: optimismLogoUrl,
+  //   statusPage: 'https://optimism.io/status',
+  //   helpCenterUrl:
+  //     'https://help.uniswap.org/en/collections/3137778-uniswap-on-optimistic-ethereum-oξ',
+  //   nativeCurrency: {
+  //     name: 'Optimistic Kovan Ether',
+  //     symbol: 'kovOpETH',
+  //     decimals: 18,
+  //   },
+  // },
   [SupportedChainId.ARBITRUM_ONE]: {
     networkType: NetworkType.L2,
     chainId: SupportedChainId.ARBITRUM_ONE,
@@ -122,22 +122,22 @@ export const CHAIN_INFO: ChainInfoMap = {
       'https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   },
-  [SupportedChainId.ARBITRUM_RINKEBY]: {
-    networkType: NetworkType.L2,
-    chainId: SupportedChainId.ARBITRUM_RINKEBY,
-    bridge: 'https://bridge.arbitrum.io/',
-    docs: 'https://offchainlabs.com/',
-    explorer: 'https://rinkeby-explorer.arbitrum.io/',
-    infoLink: 'https://info.uniswap.org/#/arbitrum/',
-    label: 'Arbitrum Rinkeby',
-    logoUrl: arbitrumLogoUrl,
-    defaultListUrl: ARBITRUM_LIST,
-    helpCenterUrl:
-      'https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum',
-    nativeCurrency: {
-      name: 'Rinkeby Arbitrum Ether',
-      symbol: 'rinkArbETH',
-      decimals: 18,
-    },
-  },
+  // [SupportedChainId.ARBITRUM_RINKEBY]: {
+  //   networkType: NetworkType.L2,
+  //   chainId: SupportedChainId.ARBITRUM_RINKEBY,
+  //   bridge: 'https://bridge.arbitrum.io/',
+  //   docs: 'https://offchainlabs.com/',
+  //   explorer: 'https://rinkeby-explorer.arbitrum.io/',
+  //   infoLink: 'https://info.uniswap.org/#/arbitrum/',
+  //   label: 'Arbitrum Rinkeby',
+  //   logoUrl: arbitrumLogoUrl,
+  //   defaultListUrl: ARBITRUM_LIST,
+  //   helpCenterUrl:
+  //     'https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum',
+  //   nativeCurrency: {
+  //     name: 'Rinkeby Arbitrum Ether',
+  //     symbol: 'rinkArbETH',
+  //     decimals: 18,
+  //   },
+  // },
 };
