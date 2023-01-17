@@ -7,7 +7,7 @@ import { SupportedChainId } from '../constants/chainInfo';
 
 interface TokenState {
   tokenLists: {
-    [SupportedChainId.GOERLI]: TokenList[];
+    [SupportedChainId.GOERLI]: TokenList;
     [SupportedChainId.MAINNET]: TokenList[];
     [SupportedChainId.ARBITRUM_ONE]: TokenList[];
     [SupportedChainId.OPTIMISM]: TokenList[];
@@ -20,7 +20,7 @@ export const useTokensStore = create<TokenState>()(
     persist(
       (set, get) => ({
         tokenLists: {
-          [SupportedChainId.GOERLI]: [],
+          [SupportedChainId.GOERLI]: GOERLI_LIST,
           [SupportedChainId.MAINNET]: [],
           [SupportedChainId.ARBITRUM_ONE]: [],
           [SupportedChainId.OPTIMISM]: [],

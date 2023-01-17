@@ -45,6 +45,7 @@ export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }:
   const { chain: activeChain, setTradeToken, isDuplicate } = useTradeStore();
   const { tokenLists, loadTokens } = useTokensStore();
   const tokenList = useMemo<TokenInfo[]>(
+    //@ts-ignore
     () => tokenLists[activeChain]?.tokens,
     [tokenLists, activeChain],
   );
