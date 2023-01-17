@@ -6,7 +6,7 @@ import { SupportedChainId } from '../constants/chainInfo';
 
 type Token = {
   token: TokenInfo,
-  amount?: number;
+  amount: number;
   price?: string;
 }
 
