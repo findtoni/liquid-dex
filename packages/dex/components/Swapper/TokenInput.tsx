@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Button, useDisclosure } from '@chakra-ui/react';
 import {
@@ -12,6 +12,7 @@ import TokenSkeleton from './TokenSkeleton';
 import { TokenInfo } from '@uniswap/token-lists';
 import { TokenImage } from './TokenSelectorModal';
 import { useTradeStore } from '../../store/trade';
+import TokenQuote from './TokenQuote';
 
 type Token = {
   token: TokenInfo;
@@ -23,7 +24,7 @@ interface TokenInput {
   type: 'buy' | 'sell';
   token: Token;
   onMax?: () => void;
-  onReverse?: () => void;
+  onReverse: () => void;
   loading?: boolean;
 }
 
@@ -59,8 +60,7 @@ export default function TokenInput({ type, token, onMax, onReverse, loading }: T
             {type == 'sell' ? (
               <span
                 onClick={onMax}
-                className="p-0.5 bg-slate-800 rounded text-blue-300 text-xs uppercase font-medium"
-              >
+                className="p-0.5 bg-slate-800 rounded text-blue-300 text-xs uppercase font-medium">
                 max
               </span>
             ) : null}
@@ -70,16 +70,20 @@ export default function TokenInput({ type, token, onMax, onReverse, loading }: T
         <div className="flex justify-between items-center text-white">
           <div
             onClick={onOpen}
-            className="flex justify-start items-center space-x-1 hover:cursor-pointer p-1 hover:rounded hover:bg-gray-600"
-          >
-            <TokenImage name={token.token?.name} logoURI={token.token?.logoURI} />
+            className="flex justify-start items-center space-x-1 hover:cursor-pointer p-1 hover:rounded hover:bg-gray-600">
+            <TokenImage
+              name={token.token?.name}
+              logoURI={token.token?.logoURI}
+            />
             <p className="text-xl font-medium">{token.token?.symbol}</p>
             <ChevronDownIcon className="text-white h-3 w-3" />
           </div>
           {loading ? (
             <TokenSkeleton width="24" />
+          ) : type === 'sell' ? (
+            <TokenAmountInput type={type} />
           ) : (
-              <TokenAmountInput type={type} />
+            <TokenQuote />
           )}
         </div>
         {/* Token Name / Token Price */}
@@ -88,11 +92,16 @@ export default function TokenInput({ type, token, onMax, onReverse, loading }: T
           {loading ? (
             <TokenSkeleton width="10" />
           ) : (
-            <p className="text-sm">{token?.price}</p>
+            <p className="text-sm">{token?.amount}</p>
           )}
         </div>
       </div>
-      <TokenSelectorModal type={type} isOpen={isOpen} onClose={onClose} onReverse={onReverse} />
+      <TokenSelectorModal
+        type={type}
+        isOpen={isOpen}
+        onClose={onClose}
+        onReverse={onReverse}
+      />
     </>
   );
 }
