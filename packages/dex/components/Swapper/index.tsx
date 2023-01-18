@@ -47,8 +47,8 @@ export default function Swapper() {
   }
   function reverseToken() {
     setIsLoading(true);
-    const tokenCache = tokenOut;
-    setTradeToken('sell', tokenIn.token);
+    const tokenCache = tokenIn;
+    setTradeToken('sell', tokenOut.token);
     setTradeToken('buy', tokenCache.token);
     setTimeout(() => setIsLoading(false), 1000);
   }
@@ -59,7 +59,7 @@ export default function Swapper() {
       <MenuBar />
       <TokenInput
         type="sell"
-        token={tokenOut}
+        token={tokenIn}
         onMax={setTokenInMax}
         loading={isLoading}
         onReverse={reverseToken}
@@ -67,7 +67,7 @@ export default function Swapper() {
       <TokenReverse onReverse={reverseToken} />
       <TokenInput
         type="buy"
-        token={tokenIn}
+        token={tokenOut}
         loading={isLoading}
         onReverse={reverseToken}
       />

@@ -29,18 +29,18 @@ interface TokenInput {
 }
 
 function TokenAmountInput({ type }: { type: 'buy' | 'sell' }) {
-  const [value, setValue] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(0);
   const { setTradeAmount } = useTradeStore();
   //todo: set max to token max in wallet
   
-  const setAmount = (value: number) => {
-    setValue(value);
+  const handleChange = (value: number) => {
+    setAmount(value);
     setTradeAmount(type, value);
   };
 
   return (
     //@ts-ignore
-    <NumberInput step={0.1} precision={1} value={value} onChange={setAmount} min={0} max={30} maxW='90px' allowMouseWheel>
+    <NumberInput value={amount} onChange={handleChange} min={0} max={30} maxW='90px' allowMouseWheel>
       <NumberInputField />
     </NumberInput>
   );
@@ -92,7 +92,7 @@ export default function TokenInput({ type, token, onMax, onReverse, loading }: T
           {loading ? (
             <TokenSkeleton width="10" />
           ) : (
-            <p className="text-sm">{token?.amount}</p>
+            <p className="text-sm">{`$ ${token?.price}`}</p>
           )}
         </div>
       </div>

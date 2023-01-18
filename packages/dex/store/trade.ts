@@ -10,12 +10,15 @@ type Token = {
   price?: string;
 }
 
+type TokenType = 'buy' | 'sell';
+
 interface TradeState {
   chain: SupportedChainId;
   tokenIn: Token;
   tokenOut: Token;
-  setTradeToken: (type: 'buy' | 'sell', token: TokenInfo) => void;
-  setTradeAmount: (type: 'buy' | 'sell', amount: number) => void;
+  setTradeToken: (type: TokenType, token: TokenInfo) => void;
+  setTradeAmount: (type: TokenType, amount: number) => void;
+  setTradePrice: (type: TokenType, price: string) => void;
   setChain: (chain: SupportedChainId) => void;
   isDuplicate: (token: TokenInfo) => boolean;
 }
@@ -27,16 +30,16 @@ export const useTradeStore = create<TradeState>()(
       tokenIn: {
         token: GOERLI_LIST?.tokens[0],
         amount: 0,
-        price: '$1.2',
+        price: '',
       },
       tokenOut: {
         token: GOERLI_LIST?.tokens[1],
         amount: 0,
-        price: '$1.2',
+        price: '',
       },
       setTradeToken: (type, token) => {
         const { tokenIn, tokenOut } = get();
-        if (type === 'buy') {
+        if (type === 'sell') {
           set({ tokenIn: { ...tokenIn, token: token } });
         } else {
           set({ tokenOut: { ...tokenOut, token: token }});
@@ -44,10 +47,18 @@ export const useTradeStore = create<TradeState>()(
       },
       setTradeAmount: (type, amount) => {
         const { tokenIn, tokenOut } = get();
-        if (type === 'buy') {
+        if (type === 'sell') {
           set({ tokenIn: { ...tokenIn, amount } });
         } else {
           set({ tokenOut: { ...tokenOut, amount }});
+        }
+      },
+      setTradePrice: (type, price) => {
+        const { tokenIn, tokenOut } = get();
+        if (type === 'sell') {
+          set({ tokenIn: { ...tokenIn, price } });
+        } else {
+          set({ tokenOut: { ...tokenOut, price }});
         }
       },
       setChain: (chain) => set({ chain }),

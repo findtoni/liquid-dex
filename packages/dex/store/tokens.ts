@@ -36,10 +36,16 @@ export const useTokensStore = create<TokenState>()(
             .then(res => res.map(res => res.value))
             .then(res => Promise.all(res.map(async res => await res.json())))
             .then(res => {
+              const UNISWAP_LIST = res.find(list => list.name.includes('Uniswap'));
               set({
                 tokenLists: {
                   [SupportedChainId.GOERLI]: GOERLI_LIST,
-                  [SupportedChainId.MAINNET]: res.find(list => list.name.includes('Uniswap')),
+                  [SupportedChainId.MAINNET]: {
+                    ...UNISWAP_LIST,
+                    tokens: UNISWAP_LIST.tokens.filter(
+                      (token: TokenInfo) => token.chainId === SupportedChainId.MAINNET,
+                    ),
+                  },
                   [SupportedChainId.ARBITRUM_ONE]: res.find(list => list.name.includes('Arb')),
                   [SupportedChainId.OPTIMISM]: res.find(list => list.name.includes('Optimism')),
                 },

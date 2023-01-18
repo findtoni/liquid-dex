@@ -23,5 +23,5 @@ function countDecimals(x: number) {
   if (Math.floor(x) === x) {
     return 0;
   }
-  return x.toString().split('.')[1].length || 0;
+  return x.toString().split('.')[0].length || 0;
 }
