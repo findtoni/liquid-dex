@@ -13,6 +13,13 @@ import {
 } from '@chakra-ui/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { TokenInfo } from '@uniswap/token-lists';
+import {
+  create,
+  insertBatch,
+  search,
+  Lyra,
+  PropertiesSchema,
+} from '@lyrasearch/lyra';
 import Image from 'next/image';
 
 interface TokenSelectorProps {
@@ -21,6 +28,13 @@ interface TokenSelectorProps {
   onClose: () => void;
   onReverse: () => void;
 }
+
+interface TokenSearchSchema extends PropertiesSchema {
+  name: 'string';
+  symbol: 'string';
+  address: 'string';
+}
+
 
 export function TokenImage({ name, logoURI = 'https://via.placeholder.com/50' }: { name: string, logoURI: string | undefined }) {
   return (
@@ -37,7 +51,7 @@ function TokenItem({ token, onClick }: { token: TokenInfo, onClick: () => void }
         <p>{token?.name}</p>
         <p className="text-sm font-medium">{token?.symbol}</p>
       </div>
-    </div>      
+    </div>
   );
 }
 
@@ -49,9 +63,12 @@ export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }:
     () => tokenLists[activeChain]?.tokens,
     [tokenLists, activeChain],
   );
+  const [tokensDB, setTokensDB] = useState<Lyra<TokenSearchSchema>>();
+  const [searchResult, setSearchResult] = useState<TokenInfo[]>();
 
-  useEffect(() => {
+  useEffect(  () => {
     loadTokens();
+    loadTokenSearch();
   }, []);
 
   function setToken(token: TokenInfo) {
@@ -59,6 +76,31 @@ export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }:
       onReverse();
     } else setTradeToken(type, token);
     onClose();
+  }
+
+  async function loadTokenSearch() {
+    const db = await create({
+      schema: {
+        name: 'string',
+        symbol: 'string',
+        address: 'string',
+      },
+    });
+    const docs = tokenList.map(token => {
+      return { name: token.name, symbol: token.symbol, address: token.address };
+    });
+    await insertBatch(db, docs, { batchSize: 500 });
+    setTokensDB(db);
+  }
+
+  async function searchTokens(event: React.ChangeEvent<HTMLInputElement>) {
+    //@ts-ignore
+    const searchResult = await search(tokensDB, {
+      term: event.target.value,
+      properties: '*',
+    });
+    const tokens = searchResult.hits.map(res => tokenList.find(token => token.symbol === res.document.symbol)) as TokenInfo[];
+    setSearchResult(tokens);
   }
 
   return (
@@ -78,20 +120,31 @@ export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }:
                   <MagnifyingGlassIcon className="h-5 w-5 text-gray-500" />
                 </InputLeftElement>
                 <Input
+                  onChange={searchTokens}
                   type="text"
                   placeholder="Search by name, symbol or address"
                 />
-              </InputGroup>
+              </InputGroup> 
               <div
                 className="flex flex-col space-y-2 overflow-auto h-auto pt-4"
                 style={{ maxHeight: 'calc(100vh - 1rem - 81px - 50px)' }}>
-                {tokenList?.map((token, index) => (
-                  <TokenItem
-                    token={token}
-                    onClick={() => setToken(token)}
-                    key={index}
-                  />
-                ))}
+                  {
+                    searchResult && searchResult.length > 0
+                    ? (searchResult?.map((token, index) => (
+                      <TokenItem
+                        token={token}
+                        onClick={() => setToken(token)}
+                        key={index}
+                      />
+                    ))) 
+                    : (tokenList?.map((token, index) => (
+                      <TokenItem
+                        token={token}
+                        onClick={() => setToken(token)}
+                        key={index}
+                      />
+                    )))
+                  }
               </div>
             </div>
           </ModalBody>
