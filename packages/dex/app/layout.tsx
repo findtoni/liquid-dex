@@ -20,7 +20,7 @@ import { Web3Modal } from '@web3modal/react';
 
 
 export default function RootLayout({
-  children,             
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -33,7 +33,7 @@ export default function RootLayout({
           content="Swap crypto tokens across multi-chains"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="https://fav.farm/⚡"                               />
+        <link rel="icon" href="https://fav.farm/⚡" />
       </head>
       <body className="liquid">
         <WagmiConfig client={wagmiClient}>
