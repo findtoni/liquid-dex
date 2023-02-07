@@ -9,8 +9,10 @@ import { publicProvider } from 'wagmi/providers/public';
 
 export const chains = [mainnet, goerli, arbitrum, optimism];
 
+const projectId = `${process.env.WALLETCONNECT_PROJECT_ID}`;
+
 const { provider } = configureChains(chains, [
-  walletConnectProvider({ projectId: `${process.env.WALLETCONNECT_PROJECT_ID}` }),
+  walletConnectProvider({ projectId: projectId }),
   alchemyProvider({ apiKey: `${process.env.ALCHEMY_API_KEY}` }),
   publicProvider(),
 ]);
@@ -18,7 +20,7 @@ const { provider } = configureChains(chains, [
 export const wagmiClient = createClient({
   autoConnect: true,
   connectors: modalConnectors({
-    projectId: `${ process.env.WALLETCONNECT_PROJECT_ID }`,
+    projectId: projectId,
     version: '2',
     appName: `${process.env.APP_NAME}`,
     chains,
