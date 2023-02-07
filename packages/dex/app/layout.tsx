@@ -1,16 +1,26 @@
 'use client';
 
+// styles
 import '../styles/tailwind.css';
 import '../styles/globals.scss';
 
+// providers
 import { ChakraProvider } from '@chakra-ui/react';
-import { WagmiConfig } from 'wagmi';
-import { wagmiClient } from '../hooks/useWagmi';
 import { ApolloProvider } from '@apollo/client';
+
+// clients
+import { chains, wagmiClient } from '../hooks/useWagmi';
 import { apolloClient } from '../hooks/useApollo';
+import { EthereumClient } from '@web3modal/ethereum';
+const ethereumClient = new EthereumClient(wagmiClient, chains);
+
+// components
+import { WagmiConfig } from 'wagmi';
+import { Web3Modal } from '@web3modal/react';
+
 
 export default function RootLayout({
-  children,
+  children,             
 }: {
   children: React.ReactNode;
 }) {
@@ -23,7 +33,7 @@ export default function RootLayout({
           content="Swap crypto tokens across multi-chains"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="https://fav.farm/⚡" />
+        <link rel="icon" href="https://fav.farm/⚡"                               />
       </head>
       <body className="liquid">
         <WagmiConfig client={wagmiClient}>
@@ -31,6 +41,10 @@ export default function RootLayout({
             <ChakraProvider>{children}</ChakraProvider>
           </ApolloProvider>
         </WagmiConfig>
+        <Web3Modal
+          projectId={`${process.env.WALLETCONNECT_PROJECT_ID}`}
+          ethereumClient={ethereumClient}
+        />        
       </body>
     </html>
   );
