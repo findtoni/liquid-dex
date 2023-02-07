@@ -1,5 +1,5 @@
-import NetworkSelector from './Wallet/NetworkSelector';
-import ConnectWallet from './Wallet/ConnectWallet';
+import NetworkSwitch from './Wallet/Chains';
+import WalletConnect from './Wallet/Connection';
 
 export default function Header() {
   return (
@@ -8,8 +8,8 @@ export default function Header() {
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-xl text-white">Liquid</h1>
           <div className="w-full flex justify-end items-center space-x-3">
-            <NetworkSelector />
-            <ConnectWallet />
+            <NetworkSwitch />
+            <WalletConnect />
           </div>
         </div>
       </div>

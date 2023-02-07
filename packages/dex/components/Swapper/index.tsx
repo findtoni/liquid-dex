@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Button } from '@chakra-ui/react';
 import { useAccount } from 'wagmi';
-import { ConnectWalletButton } from '../Wallet/ConnectWallet';
 import Card from '../Card';
 import TokenInput from './TokenInput';
 import TokenReverse from './TokenReverse';
@@ -72,15 +71,10 @@ export default function Swapper() {
         onReverse={reverseToken}
       />
       <TradeInfo />
-
-      {/* Connect Wallet */}
-      {isConnected ? (
-        <Button className="w-full" colorScheme="blue">
-          Button
-        </Button>
-      ) : (
-        <ConnectWalletButton />
-      )}
+      {/* TODO: disabled if not connected */}
+      <Button className="w-full" colorScheme="blue">
+        Button
+      </Button>
     </Card>
   );
 }
