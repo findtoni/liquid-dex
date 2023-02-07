@@ -42,6 +42,7 @@ export default function RootLayout({
           </ApolloProvider>
         </WagmiConfig>
         <Web3Modal
+          //@ts-ignore
           projectId={process.env.WALLETCONNECT_PROJECT_ID}
           ethereumClient={ethereumClient}
         />
