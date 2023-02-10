@@ -1,4 +1,5 @@
-import create from 'zustand';
+import { DEFAULT_MAINNET_TOKENS } from './../constants/tokenLists';
+import { create } from 'zustand';
 import GOERLI_LIST from '../constants/goerli.json';
 import { TOKEN_LISTS } from '../constants/tokenLists';
 import { TokenInfo, TokenList } from '@uniswap/token-lists';
@@ -36,15 +37,21 @@ export const useTokensStore = create<TokenState>()(
             .then(res => res.map(res => res.value))
             .then(res => Promise.all(res.map(async res => await res.json())))
             .then(res => {
-              const UNISWAP_LIST = res.find(list => list.name.includes('Uniswap'));
+              const MAINNET_LIST = res.find(list => list.name.includes('1inch'));
+              const MAINNET_TOKENS = MAINNET_LIST.tokens
+                .filter(
+                  (token: TokenInfo) =>
+                    token.chainId === SupportedChainId.MAINNET,
+                )
+                .sort((a: TokenInfo, b: TokenInfo) =>
+                  a.name.localeCompare(b.name),
+                );
               set({
                 tokenLists: {
                   [SupportedChainId.GOERLI]: GOERLI_LIST,
                   [SupportedChainId.MAINNET]: {
-                    ...UNISWAP_LIST,
-                    tokens: UNISWAP_LIST.tokens.filter(
-                      (token: TokenInfo) => token.chainId === SupportedChainId.MAINNET,
-                    ),
+                    ...MAINNET_LIST,
+                    tokens: MAINNET_TOKENS.filter((token: TokenInfo) => DEFAULT_MAINNET_TOKENS.includes(token.symbol)),
                   },
                   [SupportedChainId.ARBITRUM_ONE]: res.find(list => list.name.includes('Arb')),
                   [SupportedChainId.OPTIMISM]: res.find(list => list.name.includes('Optimism')),
