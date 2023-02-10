@@ -43,6 +43,7 @@ function TokenInputAmount({ amount, balance, onInput }: TokenInputAmount) {
         maxW={16}
         min={0}
         max={Number(balance)}
+        clampValueOnBlur={false}
         variant="unstyled"
         allowMouseWheel>
         <NumberInputField />
@@ -68,7 +69,7 @@ export default function TokenInput({ type, token, onMax, onReverse, onInput, loa
                   <p className="m-0 p-0 text-xs">Balance: {token.balance}</p>
                   <span
                     onClick={onMax}
-                    className="p-1 bg-slate-800 rounded text-blue-300 text-[0.6rem] uppercase font-semibold">
+                    className="p-1 bg-slate-800 rounded text-blue-300 text-[0.6rem] uppercase font-semibold cursor-pointer">
                     max
                   </span>
                 </div>

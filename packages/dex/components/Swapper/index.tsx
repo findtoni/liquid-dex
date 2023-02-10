@@ -17,6 +17,7 @@ export default function Swapper() {
   const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tokenInBalance, setTokenInBalance] = useState<string | null>('');
+  const [hasFunds, setHasFunds] = useState(false);
   const {
     chain,
     tokenIn,
@@ -74,7 +75,7 @@ export default function Swapper() {
     setTimeout(() => setIsLoading(false), 500);
   }
 
-  async function fetchTokenInBalance() {
+  async function fetchTokenInBalance(amount?: string) {
     const settings = {
       apiKey: alchemyKey,
       network: alchemyNetwork,
@@ -89,18 +90,33 @@ export default function Swapper() {
 
     if (balance === '0.0000') setTokenInBalance('0');
     else setTokenInBalance(balance);
+
+    if (amount) {
+      if (Number(balance) >= Number(amount)) {
+        setHasFunds(true);
+      }
+    }
   }
 
-  async function fetchTradeData(value: string) {
-    if (value === '') setTradeAmount('sell', '0');
-    else setTradeAmount('sell', value);
+  async function fetchTradeData(amount: string) {
+    if (amount === '') setTradeAmount('sell', '0');
+    else setTradeAmount('sell', amount);
 
-    await fetchPrice(value);
-    await fetchTokenInBalance();
+    await fetchPrice(amount);
+    await fetchTokenInBalance(amount);
+
+    setInterval(async () => {
+      await fetchPrice(amount);
+      await fetchTokenInBalance(amount);
+    }, 50000);
   };
 
-  function setTokenInMax() {
-    // tokenIn.amount = tokenIn.balance;
+  async function setTokenInMax() {
+    setIsLoading(true);
+    await fetchTokenInBalance();
+    setTradeAmount('sell', `${tokenInBalance}`);
+    await fetchPrice(`${tokenInBalance}`);
+    setIsLoading(false);
   }
   function reverseToken() {
     setIsLoading(true);
@@ -142,8 +158,8 @@ export default function Swapper() {
         />
         <TradeEstimate />
         {isConnected ? (
-          <Button className="w-full" colorScheme="blue">
-            Swap
+          <Button className="w-full" isDisabled={!hasFunds} colorScheme="blue">
+            { hasFunds ? 'Swap' : 'Insufficient Balance'}
           </Button>
         ) : (
           <Button className="w-full" colorScheme="blue">
