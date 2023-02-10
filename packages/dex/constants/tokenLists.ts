@@ -6,8 +6,8 @@ export const OPTIMISM_LIST = 'https://static.optimism.io/optimism.tokenlist.json
 
 export const TOKEN_LISTS: string[] = [
   INCH_LIST,
-  ARBITRUM_LIST,
-  OPTIMISM_LIST,
+  // ARBITRUM_LIST,
+  // OPTIMISM_LIST,
 ];
 
 export const DEFAULT_MAINNET_TOKENS: string[] = [

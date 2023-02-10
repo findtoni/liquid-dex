@@ -10,8 +10,8 @@ interface TokenState {
   tokenLists: {
     [SupportedChainId.GOERLI]: TokenList;
     [SupportedChainId.MAINNET]: TokenList[];
-    [SupportedChainId.ARBITRUM_ONE]: TokenList[];
-    [SupportedChainId.OPTIMISM]: TokenList[];
+    // [SupportedChainId.ARBITRUM_ONE]: TokenList[];
+    // [SupportedChainId.OPTIMISM]: TokenList[];
   };
   loadTokens: () => Promise<void>;
 }
@@ -23,8 +23,8 @@ export const useTokensStore = create<TokenState>()(
         tokenLists: {
           [SupportedChainId.GOERLI]: GOERLI_LIST,
           [SupportedChainId.MAINNET]: [],
-          [SupportedChainId.ARBITRUM_ONE]: [],
-          [SupportedChainId.OPTIMISM]: [],
+          // [SupportedChainId.ARBITRUM_ONE]: [],
+          // [SupportedChainId.OPTIMISM]: [],
         },
         loadTokens: async () => {
           Promise.allSettled(TOKEN_LISTS.map(async list => await fetch(list)))
@@ -53,8 +53,8 @@ export const useTokensStore = create<TokenState>()(
                     ...MAINNET_LIST,
                     tokens: MAINNET_TOKENS.filter((token: TokenInfo) => DEFAULT_MAINNET_TOKENS.includes(token.symbol)),
                   },
-                  [SupportedChainId.ARBITRUM_ONE]: res.find(list => list.name.includes('Arb')),
-                  [SupportedChainId.OPTIMISM]: res.find(list => list.name.includes('Optimism')),
+                  // [SupportedChainId.ARBITRUM_ONE]: res.find(list => list.name.includes('Arb')),
+                  // [SupportedChainId.OPTIMISM]: res.find(list => list.name.includes('Optimism')),
                 },
               });
             })
