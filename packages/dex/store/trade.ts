@@ -1,12 +1,13 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+
 import { TokenInfo } from '@uniswap/token-lists';
 import GOERLI_LIST from '../constants/goerli.json';
 import { SupportedChainId } from '../constants/chainInfo';
 
 type Token = {
   token: TokenInfo,
-  amount: number;
+  amount: string;
   price?: string;
 }
 
@@ -16,9 +17,22 @@ interface TradeState {
   chain: SupportedChainId;
   tokenIn: Token;
   tokenOut: Token;
+  gas: {
+    gasPrice: string;
+    gas: string;
+  };
+  estimate: {
+    amount: string;
+    price: string;
+  };
   setTradeToken: (type: TokenType, token: TokenInfo) => void;
-  setTradeAmount: (type: TokenType, amount: number) => void;
+  setTradeAmount: (type: TokenType, amount: string) => void;
   setTradePrice: (type: TokenType, price: string) => void;
+  setTradeEstimate: (
+    type: TokenType,
+    estimate: { amount: string; price: string },
+  ) => void;
+  setTradeGas: (gasPrice: string, gas: string) => void;
   setChain: (chain: SupportedChainId) => void;
   isDuplicate: (token: TokenInfo) => boolean;
 }
@@ -29,12 +43,20 @@ export const useTradeStore = create<TradeState>()(
       chain: 5,
       tokenIn: {
         token: GOERLI_LIST?.tokens[0],
-        amount: 0,
+        amount: '',
         price: '',
       },
       tokenOut: {
         token: GOERLI_LIST?.tokens[1],
-        amount: 0,
+        amount: '',
+        price: '',
+      },
+      gas: {
+        gasPrice: '',
+        gas: '',
+      },
+      estimate: {
+        amount: '',
         price: '',
       },
       setTradeToken: (type, token) => {
@@ -60,6 +82,12 @@ export const useTradeStore = create<TradeState>()(
         } else {
           set({ tokenOut: { ...tokenOut, price }});
         }
+      },
+      setTradeEstimate: (type, estimate) => {
+        set({ estimate: estimate });
+      },
+      setTradeGas: (gasPrice, gas) => {
+        set({ gas: { gasPrice, gas } });
       },
       setChain: (chain) => set({ chain }),
       isDuplicate: (token) => {

@@ -19,10 +19,12 @@ export default function NetworkSwitch() {
 
     //@ts-ignore
     const tokenList = tokenLists[chainId]?.tokens;
-    trade.setTradeToken('sell', tokenList[0]);
-    trade.setTradeToken('buy', tokenList[1]);
-    trade.setTradeAmount('sell', 0);
-    trade.setTradeAmount('buy', 0);
+    if (tokenList) {
+      trade.setTradeToken('sell', tokenList[0]);
+      trade.setTradeToken('buy', tokenList[1]);
+      trade.setTradeAmount('sell', '0');
+      trade.setTradeAmount('buy', '0');
+    }
   }, [chain]);
 
   return (
