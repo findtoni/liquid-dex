@@ -7,7 +7,7 @@ export default function Header() {
       <div className="container">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-xl text-white">Liquid</h1>
-          <div className="w-full flex justify-end items-center space-x-3">
+          <div className="w-full flex justify-end items-center space-x-2">
             <NetworkSwitch />
             <WalletConnect />
           </div>
