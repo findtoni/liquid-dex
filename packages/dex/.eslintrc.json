@@ -1,0 +1,16 @@
+{
+  "extends": ["next"],
+  "settings": {
+    "next": {
+      "rootDir": "packages/dex/"
+    }
+  },
+  "rules": {
+    "semi": 1,
+    "comma-dangle": 0,
+    "no-trailing-spaces": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@react-hooks/exhaustive-deps": "off",
+    "quotes": ["warn", "single"]
+  }
+}

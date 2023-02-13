@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;&display=swap");
+
+.liquid {
+  background: #1C121E;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #0B1628, #1C121E);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #0B1628, #1C121E); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  overscroll-behavior: none;
+  font-family: "Open Sans", sans-serif;
+}
+
+.token-input {
+  input {
+    padding: 0!important;
+    text-align: right;
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+}

@@ -1,55 +1,10 @@
 {
-  "name": "liquid-defi-exchange",
+  "name": "root",
   "private": true,
-  "version": "1.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@heroicons/vue": "^1.0.6",
-    "@truffle/hdwallet-provider": "^2.0.9",
-    "@vueuse/core": "^7.6.1",
-    "ant-design-vue": "^3.1.1",
-    "apexcharts": "^3.33.1",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "babel-preset-stage-3": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "browserify-zlib": "^0.2.0",
-    "chai": "^4.3.6",
-    "chai-as-promised": "^7.1.1",
-    "chai-bignumber": "^3.0.0",
-    "dotenv": "^16.0.0",
-    "events": "^3.3.0",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.2",
-    "openzeppelin-solidity": "^4.5.0",
-    "pinia": "^2.0.11",
-    "process": "^0.11.10",
-    "reselect": "^4.1.5",
-    "sass": "^1.53.0",
-    "solidity-coverage": "^0.7.19",
-    "stream-browserify": "^3.0.0",
-    "truffle": "^5.4.33",
-    "truffle-flattener": "^1.6.0",
-    "truffle-hdwallet-provider-privkey": "^0.3.0",
-    "util": "^0.12.4",
-    "vue": "^3.2.25",
-    "vue-router": "^4.0.14",
-    "vue3-apexcharts": "^1.4.1",
-    "web3": "^1.7.3"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.2.0",
-    "autoprefixer": "^10.4.2",
-    "postcss": "^8.4.6",
-    "tailwindcss": "^3.0.22",
-    "unplugin-auto-import": "^0.9.0",
-    "unplugin-vue-components": "^0.19.3",
-    "vite": "^2.8.0"
+    "lerna": "^6.3.0"
   }
 }

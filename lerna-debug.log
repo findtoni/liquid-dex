@@ -1,0 +1,14 @@
+0 silly argv {
+0 silly argv   _: [ 'add' ],
+0 silly argv   globs: [ 'packages/dex' ],
+0 silly argv   lernaVersion: '6.3.0',
+0 silly argv   '$0': 'node_modules/.bin/lerna',
+0 silly argv   pkg: '@uniswap/token-list-bridge-utilsfs'
+0 silly argv }
+1 notice cli v6.3.0
+2 verbose rootPath /Users/toni/Documents/GitHub/current/liquid-dex
+3 info versioning independent
+4 error HttpErrorGeneral: 404 Not Found - GET https://registry.npmjs.org/@uniswap%2ftoken-list-bridge-utilsfs - Not found
+4 error     at /Users/toni/Documents/GitHub/current/liquid-dex/node_modules/npm-registry-fetch/lib/check-response.js:95:15
+4 error     at processTicksAndRejections (node:internal/process/task_queues:96:5)
+4 error     at async RegistryFetcher.packument (/Users/toni/Documents/GitHub/current/liquid-dex/node_modules/pacote/lib/registry.js:92:19)
