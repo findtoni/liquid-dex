@@ -55,7 +55,7 @@ function TokenItem({ token, onClick }: { token: TokenInfo, onClick: () => void }
   );
 }
 
-export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }: TokenSelectorProps) {
+export default function TokenSelector({ type, isOpen, onClose, onReverse }: TokenSelectorProps) {
   const { chain: activeChain, setTradeToken, isDuplicate } = useTradeStore();
   const { tokenLists, loadTokens } = useTokensStore();
   const tokenList = useMemo<TokenInfo[]>(
@@ -112,7 +112,7 @@ export default function TokenSelectorModal({ type, isOpen, onClose, onReverse }:
           <ModalBody>
             <div className="flex flex-col space-y-3 py-2">
               <div className="flex justify-between items-center">
-                <p className="m-0 pt-1 text-lg font-medium">Token Search</p>
+                <p className="m-0 p-0 text-lg font-semibold">Token Search</p>
                 <ModalCloseButton />
               </div>
               <InputGroup>
