@@ -43,9 +43,9 @@ function TokenInputAmount({ amount, balance, onInput }: TokenInputAmount) {
         maxW={16}
         min={0}
         max={Number(balance)}
-        clampValueOnBlur={false}
         variant="unstyled"
-        allowMouseWheel>
+        clampValueOnBlur={false}
+        allowMouseWheel={false}>
         <NumberInputField />
       </NumberInput>
     </div>

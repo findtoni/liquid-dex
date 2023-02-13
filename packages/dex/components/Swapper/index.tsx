@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useTradeStore } from '../../store/trade';
 import { Network, Alchemy } from 'alchemy-sdk';
@@ -16,8 +16,10 @@ import TokenReverse from './TokenReverse';
 export default function Swapper() {
   const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [tokenInBalance, setTokenInBalance] = useState<string | null>('');
+  const [tokenInBalance, setTokenInBalance] = useState<string | null>('0');
   const [hasFunds, setHasFunds] = useState(false);
+  const [hasAmount, setHasAmount] = useState(false);
+
   const {
     chain,
     tokenIn,
@@ -46,17 +48,15 @@ export default function Swapper() {
       ? process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_MAINNET
       : process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_GOERLI;
 
-  async function fetchPrice(amount: string) {
-    setIsLoading(true);
+  async function fetchPrice(sellAmount: string) {
     const tradeParams = {
       sellToken: `${tokenIn.token.address}`,
       buyToken: `${tokenOut.token.address}`,
-      sellAmount: `${Number(amount) * (10 ** tokenIn.token.decimals)}`,
+      sellAmount: `${Number(sellAmount) * (10 ** tokenIn.token.decimals)}`,
       takerAddress: address,
     };
 
     const priceRes = await fetch(`${tradeAPI}/swap/v1/price?${qs.stringify(tradeParams)}`);
-    // const quoteRes = await fetch(`${tradeAPI}/swap/v1/quote?${qs.stringify(tradeParams)}`);
     const priceResult = await priceRes.json();
     if (priceRes.status === 200) {
       const { buyAmount, gasPrice, gas } = priceResult;
@@ -72,10 +72,9 @@ export default function Swapper() {
     } else {
       setTradeAmount('buy', '0');
     }
-    setTimeout(() => setIsLoading(false), 500);
   }
 
-  async function fetchTokenInBalance(amount?: string) {
+  async function fetchTokenInBalance(sellAmount?: string) {
     const settings = {
       apiKey: alchemyKey,
       network: alchemyNetwork,
@@ -91,25 +90,22 @@ export default function Swapper() {
     if (balance === '0.0000') setTokenInBalance('0');
     else setTokenInBalance(balance);
 
-    if (amount) {
-      if (Number(balance) >= Number(amount)) {
+    if (sellAmount) {
+      if (Number(balance) >= Number(sellAmount)) {
         setHasFunds(true);
-      }
+      } else setHasFunds(false);
+      if (Number(sellAmount) === 0) setHasAmount(false);
+      else setHasAmount(true);
     }
   }
 
-  async function fetchTradeData(amount: string) {
-    if (amount === '') setTradeAmount('sell', '0');
-    else setTradeAmount('sell', amount);
-
-    await fetchPrice(amount);
-    await fetchTokenInBalance(amount);
-
-    setInterval(async () => {
-      await fetchPrice(amount);
-      await fetchTokenInBalance(amount);
-    }, 50000);
-  };
+  async function fetchTradeData(sellAmount: string) {
+    setIsLoading(true);
+    setTradeAmount('sell', sellAmount);
+    await fetchPrice(sellAmount);
+    await fetchTokenInBalance(sellAmount);
+    setIsLoading(false);
+  }
 
   async function setTokenInMax() {
     setIsLoading(true);
@@ -118,16 +114,19 @@ export default function Swapper() {
     await fetchPrice(`${tokenInBalance}`);
     setIsLoading(false);
   }
+
   function reverseToken() {
-    setIsLoading(true);
     const tokenCache = tokenIn;
+    setIsLoading(true);
     setTradeToken('sell', tokenOut.token);
     setTradeToken('buy', tokenCache.token);
     setTimeout(() => setIsLoading(false), 1000);
   }
+
   function swap() {
 
   }
+
 
   return (
     <div className="pt-14">
@@ -158,11 +157,18 @@ export default function Swapper() {
         />
         <TradeEstimate />
         {isConnected ? (
-          <Button className="w-full" isDisabled={!hasFunds} colorScheme="blue">
-            { hasFunds ? 'Swap' : 'Insufficient Balance'}
+          <Button
+            className="w-full"
+            isDisabled={!hasFunds || !hasAmount}
+            colorScheme="blue">
+            {hasFunds
+              ? 'Swap'
+              : !hasAmount
+              ? 'Enter Amount'
+              : 'Insufficient Balance'}
           </Button>
         ) : (
-          <Button className="w-full" colorScheme="blue">
+          <Button className="w-full" isDisabled={true} colorScheme="blue">
             Connect Wallet
           </Button>
         )}
