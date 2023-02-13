@@ -36,7 +36,7 @@ export default function Swapper() {
   const tradeAPI =
     chain === 1
       ? 'https://api.0x.org'
-      : 'https:/goerli.api.0x.org';
+      : 'https://goerli.api.0x.org';
 
   const alchemyNetwork =
     chain === 1
@@ -75,11 +75,10 @@ export default function Swapper() {
   }
 
   async function fetchTokenInBalance(sellAmount?: string) {
-    const settings = {
+    const alchemy = new Alchemy({
       apiKey: alchemyKey,
       network: alchemyNetwork,
-    };
-    const alchemy = new Alchemy(settings);
+    });
     const res = await alchemy.core.getTokenBalances(
       `${address}`,
       [tokenIn.token.address],
@@ -127,6 +126,9 @@ export default function Swapper() {
 
   }
 
+  useEffect(() => {
+    fetchTokenInBalance();
+  }, []);
 
   return (
     <div className="pt-14">
